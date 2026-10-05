@@ -27,7 +27,7 @@
   <!-- Navigation Buttons -->
   <div class="flex gap-2 overflow-x-auto pb-2">
     <button id="btn-sec1" onclick="showSection(1)" class="px-4 py-2.5 rounded-lg font-bold text-sm bg-blue-600 text-white">⚛️ النموذج الكوكبي للذرة</button>
-    <button id="btn-sec2" onclick="showSection(2)" class="px-4 py-2.5 rounded-lg font-bold text-sm bg-slate-800 text-slate-300 border border-slate-700">🧲 التجاذب والتنافر (النواس)</button>
+    <button id="btn-sec2" onclick="showSection(2)" class="px-4 py-2.5 rounded-lg font-bold text-sm bg-slate-800 text-slate-300 border border-slate-700">🧲 التجاذب والتنافر بين القضبان</button>
     <button id="btn-sec3" onclick="showSection(3)" class="px-4 py-2.5 rounded-lg font-bold text-sm bg-slate-800 text-slate-300 border border-slate-700">⚡ طرق التكهرب والكشاف</button>
   </div>
 
@@ -53,15 +53,28 @@
   <!-- SECTION 2: ATTRACTION & REPUISION -->
   <div id="section2" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
     <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3">
-      <h2 class="font-bold text-blue-400 border-b border-slate-700 pb-2">🧲 التجاذب والتنافر (النواس)</h2>
-      <label class="block text-xs text-slate-300 font-semibold">اختر نوع القضيب:</label>
-      <div class="grid grid-cols-2 gap-2">
-        <button id="rod-att-ebonite" onclick="setAttRod('ebonite')" class="py-2 bg-blue-600/30 border border-blue-500 text-blue-300 font-bold rounded-lg text-xs">إيبونيت (-)</button>
-        <button id="rod-att-glass" onclick="setAttRod('glass')" class="py-2 bg-slate-900 border border-slate-700 text-slate-400 font-bold rounded-lg text-xs">زجاج (+)</button>
+      <h2 class="font-bold text-blue-400 border-b border-slate-700 pb-2">🧲 التجاذب والتنافر بين الشحنات</h2>
+      
+      <div>
+        <label class="block text-xs text-slate-300 font-semibold mb-1">1. القضيب الممسوك باليد (المتحرك):</label>
+        <select id="rod-hand" onchange="renderAtt()" class="w-full bg-slate-900 border border-slate-700 p-2 rounded-lg text-xs font-bold text-slate-200">
+          <option value="ebonite">إيبونيت مشحون (-)</option>
+          <option value="glass">زجاج مشحون (+)</option>
+        </select>
       </div>
-      <p class="text-xs text-amber-400 bg-slate-900 p-3 rounded-lg border border-slate-700">
-        👈 **اسحب القضيب بيدك/الماوس** وقربه من الكرة لملاحظة التفاعل.
-      </p>
+
+      <div>
+        <label class="block text-xs text-slate-300 font-semibold mb-1">2. القضيب المعلّق (المستجيب):</label>
+        <select id="rod-hung" onchange="renderAtt()" class="w-full bg-slate-900 border border-slate-700 p-2 rounded-lg text-xs font-bold text-slate-200">
+          <option value="ebonite">إيبونيت مشحون (-)</option>
+          <option value="glass">زجاج مشحون (+)</option>
+        </select>
+      </div>
+
+      <div id="att-result-box" class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-xs space-y-1 text-amber-400 font-bold">
+        <!-- Result text updated dynamically -->
+      </div>
+
       <button onclick="resetAttraction()" class="w-full py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold">🔄 إعادة الوضع الابتدائي</button>
     </div>
     <div class="md:col-span-2 bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-center">
@@ -94,7 +107,6 @@
   </div>
 
   <script>
-    // Navigation
     function showSection(num) {
       for(let i=1; i<=3; i++) {
         document.getElementById(`section${i}`).classList.add('hidden');
@@ -165,47 +177,65 @@
       loop();
     }
 
-    // --- Section 2: Attraction ---
-    let attType = 'ebonite', attX = 50, attY = 150, isAttDrag = false, ballAngle = 0;
+    // --- Section 2: Attraction & Repulsion ---
+    let attX = 50, attY = 150, rodAngle = 0;
 
-    function setAttRod(t) {
-      attType = t;
-      document.getElementById('rod-att-ebonite').className = t === 'ebonite' ? 'py-2 bg-blue-600/30 border border-blue-500 text-blue-300 font-bold rounded-lg text-xs' : 'py-2 bg-slate-900 border border-slate-700 text-slate-400 font-bold rounded-lg text-xs';
-      document.getElementById('rod-att-glass').className = t === 'glass' ? 'py-2 bg-blue-600/30 border border-blue-500 text-blue-300 font-bold rounded-lg text-xs' : 'py-2 bg-slate-900 border border-slate-700 text-slate-400 font-bold rounded-lg text-xs';
-      renderAtt();
-    }
-
-    function resetAttraction() { attX = 50; attY = 150; ballAngle = 0; renderAtt(); }
+    function resetAttraction() { attX = 50; attY = 150; rodAngle = 0; renderAtt(); }
 
     function renderAtt() {
       const cvs = document.getElementById('cvs-att');
       const ctx = cvs.getContext('2d');
       ctx.clearRect(0,0,cvs.width,cvs.height);
 
-      const px = 400, py = 40;
-      const bx = px + 130 * Math.sin(ballAngle), by = py + 130 * Math.cos(ballAngle);
-      const rx = attX + 100, ry = attY + 10;
-      const dist = Math.hypot(rx - bx, ry - by);
+      const handType = document.getElementById('rod-hand').value;
+      const hungType = document.getElementById('rod-hung').value;
+      const resBox = document.getElementById('att-result-box');
 
-      if(dist < 120 && dist > 20) ballAngle = -(120 - dist) * 0.003;
-      else if(dist <= 20) ballAngle = 0.3;
+      const isSame = (handType === hungType);
+      if(isSame) {
+        resBox.innerHTML = `⚠️ <span class="text-rose-400">شحنات متماثلة: يحدث تنافر!</span> (تتباعد القضبان عند التقريب)`;
+      } else {
+        resBox.innerHTML = `✨ <span class="text-emerald-400">شحنات مختلفة: يحدث تجاذب!</span> (تتجاذب القضبان عند التقريب)`;
+      }
+
+      const px = 400, py = 40;
+      const rx = attX + 110, ry = attY + 12;
+      const hungCenterY = py + 120;
+      const dist = Math.hypot(rx - px, ry - hungCenterY);
+
+      if(dist < 130) {
+        if(isSame) {
+          rodAngle = Math.min(rodAngle + 0.02, 0.45); // Repulsion
+        } else {
+          rodAngle = Math.max(rodAngle - 0.02, -0.35); // Attraction
+        }
+      }
 
       // Stand & Thread
       ctx.beginPath(); ctx.moveTo(px-30, py); ctx.lineTo(px+30, py); ctx.lineWidth=4; ctx.strokeStyle='#64748b'; ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(bx, by); ctx.lineWidth=2; ctx.strokeStyle='#cbd5e1'; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, py + 40); ctx.lineWidth=2; ctx.strokeStyle='#cbd5e1'; ctx.stroke();
 
-      // Ball
-      ctx.beginPath(); ctx.arc(bx, by, 16, 0, Math.PI*2); ctx.fillStyle = '#94a3b8'; ctx.fill(); ctx.stroke();
-
-      // Rod
-      ctx.fillStyle = attType === 'ebonite' ? '#1e293b' : '#38bdf8';
-      ctx.fillRect(attX, attY, 110, 24);
+      // Hung Rod (Rotates)
+      ctx.save();
+      ctx.translate(px, py + 40);
+      ctx.rotate(rodAngle);
+      ctx.fillStyle = hungType === 'ebonite' ? '#1e293b' : '#0284c7';
+      ctx.fillRect(-60, 0, 120, 22);
+      ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1; ctx.strokeRect(-60, 0, 120, 22);
       ctx.fillStyle = '#fff'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
-      ctx.fillText(attType === 'ebonite' ? 'إيبونيت (-)' : 'زجاج (+)', attX + 55, attY + 16);
+      ctx.fillText(hungType === 'ebonite' ? 'إيبونيت (-)' : 'زجاج (+)', 0, 15);
+      ctx.restore();
+
+      // Hand Rod (Movable)
+      ctx.fillStyle = handType === 'ebonite' ? '#1e293b' : '#0284c7';
+      ctx.fillRect(attX, attY, 110, 24);
+      ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1; ctx.strokeRect(attX, attY, 110, 24);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(handType === 'ebonite' ? 'إيبونيت (-)' : 'زجاج (+)', attX + 55, attY + 16);
     }
 
     // --- Section 3: Electroscope ---
-    let elecRod = 'ebonite', elecX = 50, elecY = 50, isElecDrag = false, leafAng = 0;
+    let elecRod = 'ebonite', elecX = 50, elecY = 50, leafAng = 0;
 
     function setElecRod(t) {
       elecRod = t;
@@ -228,25 +258,22 @@
       if(method === 'contact' && dist < 50) leafAng = Math.min(leafAng + 0.08, 0.55);
       else if(method === 'induction' && dist < 100) leafAng = Math.min(leafAng + 0.04, 0.4);
 
-      // Plate & Rod
       ctx.beginPath(); ctx.arc(cx, cy, 22, 0, Math.PI*2); ctx.fillStyle='#94a3b8'; ctx.fill();
       ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy + 120); ctx.lineWidth = 5; ctx.strokeStyle='#64748b'; ctx.stroke();
 
-      // Leaves
       ctx.save(); ctx.translate(cx, cy + 120);
       ctx.rotate(-leafAng); ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-10, 42); ctx.lineWidth=4; ctx.strokeStyle='#f59e0b'; ctx.stroke();
       ctx.rotate(leafAng * 2); ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(10, 42); ctx.lineWidth=4; ctx.strokeStyle='#f59e0b'; ctx.stroke();
       ctx.restore();
 
-      // Rod
-      ctx.fillStyle = elecRod === 'ebonite' ? '#1e293b' : '#38bdf8';
+      ctx.fillStyle = elecRod === 'ebonite' ? '#1e293b' : '#0284c7';
       ctx.fillRect(elecX, elecY, 110, 24);
       ctx.fillStyle = '#fff'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
       ctx.fillText(elecRod === 'ebonite' ? 'إيبونيت (-)' : 'زجاج (+)', elecX + 55, elecY + 16);
     }
 
-    // Drag setup for both Canvases
-    function setupDrag(canvasId, getCoord, setCoord, renderFn) {
+    // Drag Helper
+    function setupDrag(canvasId, setCoord, renderFn) {
       const cvs = document.getElementById(canvasId);
       let dragging = false;
       const updatePos = (e) => {
@@ -263,8 +290,8 @@
 
     window.onload = () => {
       showSection(1);
-      setupDrag('cvs-att', () => {}, (x, y) => { attX = x; attY = y; }, renderAtt);
-      setupDrag('cvs-elec', () => {}, (x, y) => { elecX = x; elecY = y; }, renderElectro);
+      setupDrag('cvs-att', (x, y) => { attX = x; attY = y; }, renderAtt);
+      setupDrag('cvs-elec', (x, y) => { elecX = x; elecY = y; }, renderElectro);
     };
   </script>
 </body>
