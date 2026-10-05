@@ -72,10 +72,10 @@
         </select>
       </div>
 
-      <div id="att-result-box" class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-xs space-y-1 text-amber-400 font-bold"></div>
+      <div id="att-result-box" class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-xs space-y-1 font-bold"></div>
 
       <p class="text-xs text-slate-400 bg-slate-900/60 p-2.5 rounded-lg border border-slate-700">
-        👈 **طريقة التجربة:** اسحب القضيب بالماوس وقربه من القضيب المعلق لملاحظة حركة الدوران (تجاذب أو تنافر).
+        👈 **طريقة التجربة:** اسحب القضيب بيدك وقربه من القضيب المعلق لملاحظة الدوران والتفاعل بوضوح!
       </p>
 
       <button onclick="resetAttraction()" class="w-full py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold">🔄 إعادة القضيب لمكانه</button>
@@ -109,7 +109,7 @@
       <div id="elec-info-box" class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-xs text-amber-400 font-bold space-y-1"></div>
 
       <p class="text-xs text-slate-400 bg-slate-900/60 p-2.5 rounded-lg border border-slate-700">
-        👈 **طريقة التجربة:** اسحب القضيب بالماوس وقربه من قرص الكشاف الأعلى لملاحظة انحراف ورقتي الألومنيوم فوراً!
+        👈 **طريقة التجربة:** اسحب القضيب بالماوس وقربه من قرص الكشاف الأعلى لملاحظة انحراف ورقتي الألومنيوم!
       </p>
 
       <button onclick="resetElectro()" class="w-full py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold">🔄 تفريغ شحنة الكشاف</button>
@@ -192,9 +192,9 @@
     }
 
     // --- Section 2: Attraction & Repulsion ---
-    let attX = 80, attY = 160;
+    let attX = 80, attY = 140;
 
-    function resetAttraction() { attX = 80; attY = 160; renderAtt(); }
+    function resetAttraction() { attX = 80; attY = 140; renderAtt(); }
 
     function renderAtt() {
       const cvs = document.getElementById('cvs-att');
@@ -207,9 +207,11 @@
 
       const isSame = (handType === hungType);
       if(isSame) {
-        resBox.innerHTML = `⚠️ <span class="text-rose-400">شحنات متماثلة (${handType==='ebonite'?'- -':'+ +'}): يحدث تنافر!</span>`;
+        resBox.className = 'bg-slate-900 p-3 rounded-lg border border-slate-700 text-xs font-bold text-rose-400';
+        resBox.innerHTML = `⚠️ شحنات متماثلة (${handType==='ebonite'?'- مع -':'+ مع +'}): يحدث تنافر! (تتباعد القضبان)`;
       } else {
-        resBox.innerHTML = `✨ <span class="text-emerald-400">شحنات مختلفة (+ -): يحدث تجاذب!</span>`;
+        resBox.className = 'bg-slate-900 p-3 rounded-lg border border-slate-700 text-xs font-bold text-emerald-400';
+        resBox.innerHTML = `✨ شحنات مختلفة (- مع +): يحدث تجاذب! (تتقارب القضبان)`;
       }
 
       // Stand & Support
@@ -217,20 +219,28 @@
       ctx.beginPath(); ctx.moveTo(px-40, py); ctx.lineTo(px+40, py); ctx.lineWidth=5; ctx.strokeStyle='#64748b'; ctx.stroke();
       ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, py+50); ctx.lineWidth=2; ctx.strokeStyle='#cbd5e1'; ctx.stroke();
 
-      // Hand rod tip calculation
-      const handTipX = attX + 120, handTipY = attY + 12;
-      const hungCenterX = px, hungCenterY = py + 50 + 12;
+      // Flexible Distance Calculation
+      const handCenterX = attX + 65;
+      const handCenterY = attY + 13;
+      const hungCenterX = px;
+      const hungCenterY = py + 62;
 
-      // Distance calculation
-      const dist = Math.hypot(handTipX - hungCenterX, handTipY - hungCenterY);
+      const dist = Math.hypot(handCenterX - hungCenterX, handCenterY - hungCenterY);
       let angle = 0;
 
-      if(dist < 180) {
-        const factor = (180 - dist) / 180;
-        angle = isSame ? -(factor * 0.55) : (factor * 0.45); // Negative = Repel right/away, Positive = Attract left/close
+      // Sensitive Range Activation
+      if(dist < 230) {
+        const factor = (230 - dist) / 230;
+        // Direction based on position (left or right)
+        const isLeft = (handCenterX < hungCenterX);
+        if(isSame) {
+          angle = isLeft ? (factor * 0.6) : -(factor * 0.6); // Repel away from hand
+        } else {
+          angle = isLeft ? -(factor * 0.5) : (factor * 0.5); // Attract towards hand
+        }
       }
 
-      // Draw Hung Rod (Rotating)
+      // Draw Hung Rod (Rotates smoothly)
       ctx.save();
       ctx.translate(px, py+50);
       ctx.rotate(angle);
@@ -241,11 +251,11 @@
       ctx.fillStyle = '#fff'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
       ctx.fillText(hungType === 'ebonite' ? 'إيبونيت (-)' : 'زجاج (+)', 0, 16);
       
-      // Draw Charges on Hung Rod
+      // Charges on Hung Rod
       const sign = hungType === 'ebonite' ? '-' : '+';
       ctx.fillStyle = hungType === 'ebonite' ? '#38bdf8' : '#f59e0b';
       ctx.font = 'bold 12px sans-serif';
-      ctx.fillText(`${sign} ${sign} ${sign}`, -40, -4);
+      ctx.fillText(`${sign}  ${sign}  ${sign}`, 0, -4);
       ctx.restore();
 
       // Draw Hand Rod (Draggable)
@@ -259,7 +269,7 @@
       const handSign = handType === 'ebonite' ? '-' : '+';
       ctx.fillStyle = handType === 'ebonite' ? '#38bdf8' : '#f59e0b';
       ctx.font = 'bold 12px sans-serif';
-      ctx.fillText(`${handSign} ${handSign} ${handSign}`, attX + 65, attY - 4);
+      ctx.fillText(`${handSign}  ${handSign}  ${handSign}`, attX + 65, attY - 4);
     }
 
     // --- Section 3: Electroscope ---
@@ -285,14 +295,14 @@
 
       if(method === 'contact') {
         infoBox.innerHTML = `📌 <span class="text-blue-300">التكهرب باللمس:</span> المرجو إيصال القضيب لـ **لمس** القرص المعدني مباشرة.`;
-        if(dist < 45) {
+        if(dist < 55) {
           leafAngle = 0.55; // Max divergence
           activeState = true;
         }
       } else {
         infoBox.innerHTML = `📌 <span class="text-emerald-300">التكهرب بالتأثير:</span> قرب القضيب من القرص **دون لمسه**.`;
-        if(dist < 150) {
-          leafAngle = ((150 - dist) / 150) * 0.45; // Dynamic divergence
+        if(dist < 160) {
+          leafAngle = ((160 - dist) / 160) * 0.45; // Dynamic divergence
           activeState = leafAngle > 0.05;
         }
       }
@@ -369,7 +379,7 @@
         const r = cvs.getBoundingClientRect();
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        setCoord(clientX - r.left - 60, clientY - r.top - 13);
+        setCoord(clientX - r.left - 65, clientY - r.top - 13);
         renderFn();
       };
       cvs.onmousedown = cvs.ontouchstart = (e) => { dragging = true; updatePos(e); };
