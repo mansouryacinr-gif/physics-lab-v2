@@ -20,7 +20,7 @@
       <p class="text-xs text-slate-400">الظواهر الكهربائية (4AM)</p>
     </div>
     <div class="text-xs text-slate-300 bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-600">
-      إعداد: <span class="text-emerald-400 font-bold">منصور محمد ياسين</span> | أستاذ المادة: <span class="text-blue-300 font-bold">Prof Garadi</span>
+      إعداد: <span class="text-emerald-400 font-bold">منصور محمد ياسين</span> | أستاذ المادة: <span class="text-blue-300 font-bold">جرادي أحمد</span>
     </div>
   </div>
 
@@ -95,7 +95,6 @@
   </div>
 
   <script>
-    // --- SECTION SWITCHING ---
     function showSection(num) {
       [1, 2, 3].forEach(i => {
         document.getElementById(`section${i}`).classList.add('hidden');
@@ -104,12 +103,13 @@
       document.getElementById(`section${num}`).classList.remove('hidden');
       document.getElementById(`btn-sec${num}`).className = 'px-4 py-2.5 rounded-lg font-bold text-sm bg-blue-600 text-white';
 
-      if(num === 1) drawSelectedAtom();
-      if(num === 2) initAttraction();
-      if(num === 3) initElectro();
+      setTimeout(() => {
+        if(num === 1) drawSelectedAtom();
+        if(num === 2) initAttraction();
+        if(num === 3) initElectro();
+      }, 50);
     }
 
-    // --- 1. ATOM MODEL LOGIC ---
     const atomsData = {
       'H':  { name: 'ذرة الهيدروجين (H)', z: 1,  shells: [1],       config: 'K¹' },
       'C':  { name: 'ذرة الكربون (C)',     z: 6,  shells: [2, 4],    config: 'K² L⁴' },
@@ -133,6 +133,7 @@
       `;
 
       const cvs = document.getElementById('cvs-atom');
+      if(!cvs) return;
       const ctx = cvs.getContext('2d');
 
       if(atomTimer) cancelAnimationFrame(atomTimer);
@@ -142,13 +143,11 @@
         ctx.clearRect(0,0,cvs.width,cvs.height);
         const cx = cvs.width/2, cy = cvs.height/2;
 
-        // Nucleus
         ctx.beginPath(); ctx.arc(cx, cy, 25, 0, Math.PI*2);
         ctx.fillStyle = '#ef4444'; ctx.fill();
         ctx.fillStyle = '#fff'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
         ctx.fillText(`+${data.z}`, cx, cy+4);
 
-        // Orbit Shells
         const radii = [50, 90, 135], labels = ['K', 'L', 'M'];
         data.shells.forEach((count, idx) => {
           const r = radii[idx];
@@ -173,7 +172,6 @@
       loop();
     }
 
-    // --- 2. ATTRACTION LOGIC ---
     let attType = 'ebonite', attX = 40, attY = 160, isAttDrag = false, ballAngle = 0;
 
     function setAttRod(t) {
@@ -187,6 +185,7 @@
 
     function initAttraction() {
       const cvs = document.getElementById('cvs-att');
+      if(!cvs) return;
       const getPos = e => {
         const r = cvs.getBoundingClientRect();
         return { x: (e.touches ? e.touches[0].clientX : e.clientX) - r.left, y: (e.touches ? e.touches[0].clientY : e.clientY) - r.top };
@@ -201,6 +200,7 @@
 
     function renderAtt() {
       const cvs = document.getElementById('cvs-att');
+      if(!cvs) return;
       const ctx = cvs.getContext('2d');
       ctx.clearRect(0,0,cvs.width,cvs.height);
 
@@ -212,16 +212,73 @@
       if(dist < 110 && dist > 20) ballAngle = -(110 - dist) * 0.003;
       else if(dist <= 20) ballAngle = 0.35;
 
-      // Thread & Stand
       ctx.beginPath(); ctx.moveTo(px-25, py); ctx.lineTo(px+25, py); ctx.lineWidth=4; ctx.strokeStyle='#64748b'; ctx.stroke();
       ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(bx, by); ctx.lineWidth=2; ctx.strokeStyle='#cbd5e1'; ctx.stroke();
 
-      // Ball
       ctx.beginPath(); ctx.arc(bx, by, 15, 0, Math.PI*2);
       ctx.fillStyle = '#94a3b8'; ctx.fill(); ctx.stroke();
 
-      // Rod
       ctx.fillStyle = attType === 'ebonite' ? '#1e293b' : '#38bdf8';
       ctx.fillRect(attX, attY, 110, 22);
       ctx.fillStyle = '#fff'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
-      ctx.fillText(attType === 'ebonite' ? '- - إيبونيت - -' : '+ + ز
+      ctx.fillText(attType === 'ebonite' ? '- - إيبونيت - -' : '+ + زجاج + +', attX + 55, attY + 15);
+    }
+
+    let elecRod = 'ebonite', elecX = 40, elecY = 50, isElecDrag = false, leafAng = 0;
+
+    function setElecRod(t) {
+      elecRod = t;
+      document.getElementById('rod-elec-ebonite').className = t === 'ebonite' ? 'py-2 bg-blue-600/30 border border-blue-500 text-blue-300 font-bold rounded-lg text-xs' : 'py-2 bg-slate-900 border border-slate-700 text-slate-400 font-bold rounded-lg text-xs';
+      document.getElementById('rod-elec-glass').className = t === 'glass' ? 'py-2 bg-blue-600/30 border border-blue-500 text-blue-300 font-bold rounded-lg text-xs' : 'py-2 bg-slate-900 border border-slate-700 text-slate-400 font-bold rounded-lg text-xs';
+      renderElectro();
+    }
+
+    function resetElectro() { elecX = 40; leafAng = 0; renderElectro(); }
+
+    function initElectro() {
+      const cvs = document.getElementById('cvs-elec');
+      if(!cvs) return;
+      const getPos = e => {
+        const r = cvs.getBoundingClientRect();
+        return { x: (e.touches ? e.touches[0].clientX : e.clientX) - r.left, y: (e.touches ? e.touches[0].clientY : e.clientY) - r.top };
+      };
+
+      cvs.onmousedown = cvs.ontouchstart = (e) => { isElecDrag = true; const p = getPos(e); elecX = p.x - 50; elecY = p.y - 10; renderElectro(); };
+      window.onmousemove = window.ontouchmove = (e) => { if(isElecDrag) { const p = getPos(e); elecX = p.x - 50; elecY = p.y - 10; renderElectro(); } };
+      window.onmouseup = window.ontouchend = () => isElecDrag = false;
+
+      renderElectro();
+    }
+
+    function renderElectro() {
+      const cvs = document.getElementById('cvs-elec');
+      if(!cvs) return;
+      const ctx = cvs.getContext('2d');
+      ctx.clearRect(0,0,cvs.width,cvs.height);
+
+      const cx = cvs.width * 0.65, cy = cvs.height * 0.3;
+      const method = document.getElementById('elec-method').value;
+      const dist = Math.hypot((elecX + 100) - cx, (elecY + 10) - cy);
+
+      if(method === 'contact' && dist < 40) leafAng = Math.min(leafAng + 0.08, 0.55);
+      else if(method === 'induction' && dist < 90) leafAng = Math.min(leafAng + 0.04, 0.4);
+
+      ctx.beginPath(); ctx.arc(cx, cy, 20, 0, Math.PI*2); ctx.fillStyle='#94a3b8'; ctx.fill();
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy + 110); ctx.lineWidth = 5; ctx.strokeStyle='#64748b'; ctx.stroke();
+
+      ctx.save(); ctx.translate(cx, cy + 110);
+      ctx.rotate(-leafAng); ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-8, 38); ctx.lineWidth=4; ctx.strokeStyle='#f59e0b'; ctx.stroke();
+      ctx.rotate(leafAng * 2); ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(8, 38); ctx.lineWidth=4; ctx.strokeStyle='#f59e0b'; ctx.stroke();
+      ctx.restore();
+
+      ctx.fillStyle = elecRod === 'ebonite' ? '#1e293b' : '#38bdf8';
+      ctx.fillRect(elecX, elecY, 110, 22);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(elecRod === 'ebonite' ? '- - - - -' : '+ + + + +', elecX + 55, elecY + 15);
+    }
+
+    window.addEventListener('load', () => {
+      showSection(1);
+    });
+  </script>
+</body>
