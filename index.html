@@ -12,13 +12,12 @@
       background-color: #020617; 
       border: 1px solid #334155; 
       border-radius: 12px; 
-      touch-action: none; 
       cursor: grab;
       will-change: transform;
       transform: translateZ(0);
     }
     canvas:active { cursor: grabbing; }
-    button, select { touch-action: manipulation; }
+    button, select { touch-action: manipulation; cursor: pointer; }
   </style>
 </head>
 <body class="p-3 md:p-4 max-w-6xl mx-auto space-y-4">
@@ -380,24 +379,31 @@
       ctx.fillText(`${rodSign} ${rodSign} ${rodSign} ${rodSign}`, elecX + 65, elecY - 4);
     }
 
-    // Drag helper optimized for touch
+    // Touch Drag Handler without blocking page elements
     function setupDrag(canvasId, setCoord, renderFn) {
       const cvs = document.getElementById(canvasId);
       let dragging = false;
 
-      const updatePos = (e) => {
+      const updatePos = (clientX, clientY) => {
         const r = cvs.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
         setCoord(clientX - r.left - 65, clientY - r.top - 13);
         renderFn();
       };
 
-      cvs.addEventListener('mousedown', (e) => { dragging = true; updatePos(e); });
-      cvs.addEventListener('touchstart', (e) => { dragging = true; updatePos(e); }, { passive: true });
+      cvs.addEventListener('mousedown', (e) => { dragging = true; updatePos(e.clientX, e.clientY); });
+      cvs.addEventListener('touchstart', (e) => { 
+        dragging = true; 
+        if(e.touches && e.touches[0]) {
+          updatePos(e.touches[0].clientX, e.touches[0].clientY);
+        }
+      }, { passive: true });
 
-      window.addEventListener('mousemove', (e) => { if(dragging) updatePos(e); });
-      window.addEventListener('touchmove', (e) => { if(dragging) updatePos(e); }, { passive: true });
+      window.addEventListener('mousemove', (e) => { if(dragging) updatePos(e.clientX, e.clientY); });
+      window.addEventListener('touchmove', (e) => { 
+        if(dragging && e.touches && e.touches[0]) { 
+          updatePos(e.touches[0].clientX, e.touches[0].clientY); 
+        } 
+      }, { passive: true });
 
       window.addEventListener('mouseup', () => dragging = false);
       window.addEventListener('touchend', () => dragging = false);
