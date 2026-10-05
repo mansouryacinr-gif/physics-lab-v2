@@ -7,17 +7,25 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Tajawal', sans-serif; background-color: #0f172a; color: #f8fafc; }
-    canvas { background-color: #020617; border: 1px solid #334155; border-radius: 12px; touch-action: none; cursor: grab; }
+    body { font-family: 'Tajawal', sans-serif; background-color: #0f172a; color: #f8fafc; overflow-x: hidden; }
+    canvas { 
+      background-color: #020617; 
+      border: 1px solid #334155; 
+      border-radius: 12px; 
+      touch-action: none; 
+      cursor: grab;
+      will-change: transform;
+      transform: translateZ(0);
+    }
     canvas:active { cursor: grabbing; }
   </style>
 </head>
-<body class="p-4 max-w-6xl mx-auto space-y-4">
+<body class="p-3 md:p-4 max-w-6xl mx-auto space-y-4">
 
   <!-- Header -->
-  <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-wrap justify-between items-center gap-2">
+  <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-wrap justify-between items-center gap-2 shadow-lg">
     <div>
-      <h1 class="text-xl font-bold text-blue-400">⚛️ المختبر الافتراضي للفيزياء</h1>
+      <h1 class="text-lg md:text-xl font-bold text-blue-400">⚛️ المختبر الافتراضي للفيزياء</h1>
       <p class="text-xs text-slate-400">الظواهر الكهربائية (4AM)</p>
     </div>
     <div class="text-xs text-slate-300 bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-600">
@@ -26,10 +34,10 @@
   </div>
 
   <!-- Navigation Buttons -->
-  <div class="flex gap-2 overflow-x-auto pb-2">
-    <button id="btn-sec1" onclick="showSection(1)" class="px-4 py-2.5 rounded-lg font-bold text-sm bg-blue-600 text-white">⚛️ النموذج الكوكبي للذرة</button>
-    <button id="btn-sec2" onclick="showSection(2)" class="px-4 py-2.5 rounded-lg font-bold text-sm bg-slate-800 text-slate-300 border border-slate-700">🧲 التجاذب والتنافر بين القضبان</button>
-    <button id="btn-sec3" onclick="showSection(3)" class="px-4 py-2.5 rounded-lg font-bold text-sm bg-slate-800 text-slate-300 border border-slate-700">⚡ طرق التكهرب والكشاف</button>
+  <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+    <button id="btn-sec1" onclick="showSection(1)" class="whitespace-nowrap px-3.5 py-2 rounded-lg font-bold text-xs md:text-sm bg-blue-600 text-white">⚛️ النموذج الكوكبي للذرة</button>
+    <button id="btn-sec2" onclick="showSection(2)" class="whitespace-nowrap px-3.5 py-2 rounded-lg font-bold text-xs md:text-sm bg-slate-800 text-slate-300 border border-slate-700">🧲 التجاذب والتنافر بين القضبان</button>
+    <button id="btn-sec3" onclick="showSection(3)" class="whitespace-nowrap px-3.5 py-2 rounded-lg font-bold text-xs md:text-sm bg-slate-800 text-slate-300 border border-slate-700">⚡ طرق التكهرب والكشاف</button>
   </div>
 
   <!-- SECTION 1: ATOM MODEL -->
@@ -47,7 +55,7 @@
       <div id="atom-info" class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-xs space-y-1.5 text-slate-300"></div>
     </div>
     <div class="md:col-span-2 bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-center">
-      <canvas id="cvs-atom" width="600" height="350" class="w-full h-[350px]"></canvas>
+      <canvas id="cvs-atom" width="600" height="350" class="w-full h-[320px] md:h-[350px]"></canvas>
     </div>
   </div>
 
@@ -57,7 +65,7 @@
       <h2 class="font-bold text-blue-400 border-b border-slate-700 pb-2">🧲 التجاذب والتنافر بين الشحنات</h2>
       
       <div>
-        <label class="block text-xs text-slate-300 font-semibold mb-1">1. القضيب الممسوك باليد (اسحبه بالماوس):</label>
+        <label class="block text-xs text-slate-300 font-semibold mb-1">1. القضيب الممسوك باليد (اسحبه بالمس/الماوس):</label>
         <select id="rod-hand" onchange="renderAtt()" class="w-full bg-slate-900 border border-slate-700 p-2 rounded-lg text-xs font-bold text-slate-200">
           <option value="ebonite">إيبونيت مشحون (-)</option>
           <option value="glass">زجاج مشحون (+)</option>
@@ -75,13 +83,13 @@
       <div id="att-result-box" class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-xs space-y-1 font-bold"></div>
 
       <p class="text-xs text-slate-400 bg-slate-900/60 p-2.5 rounded-lg border border-slate-700">
-        👈 **ملاحظة:** تم إضافة قانون التصادم والتنافر الحقيقي؛ لن يتمكن القضيب من اختراق القضيب الآخر إطلاقاً!
+        👈 **طريقة التجربة:** اسحب القضيب بيدك وقربه من القضيب المعلق لملاحظة الدوران والتنافر الفيزيائي.
       </p>
 
-      <button onclick="resetAttraction()" class="w-full py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold">🔄 إعادة الوضع الابتدائي</button>
+      <button onclick="resetAttraction()" class="w-full py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold transition-colors">🔄 إعادة الوضع الابتدائي</button>
     </div>
     <div class="md:col-span-2 bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-center">
-      <canvas id="cvs-att" width="600" height="350" class="w-full h-[350px]"></canvas>
+      <canvas id="cvs-att" width="600" height="350" class="w-full h-[320px] md:h-[350px]"></canvas>
     </div>
   </div>
 
@@ -109,25 +117,27 @@
       <div id="elec-info-box" class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-xs text-amber-400 font-bold space-y-1"></div>
 
       <p class="text-xs text-slate-400 bg-slate-900/60 p-2.5 rounded-lg border border-slate-700">
-        👈 **طريقة التجربة:** اسحب القضيب بالماوس وقربه من قرص الكشاف الأعلى لملاحظة انحراف ورقتي الألومنيوم!
+        👈 **طريقة التجربة:** اسحب القضيب بالماوس/اللمس وقربه من القرص الأكبر في الأعلى.
       </p>
 
-      <button onclick="resetElectro()" class="w-full py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold">🔄 تفريغ شحنة الكشاف</button>
+      <button onclick="resetElectro()" class="w-full py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold transition-colors">🔄 تفريغ شحنة الكشاف</button>
     </div>
     <div class="md:col-span-2 bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-center">
-      <canvas id="cvs-elec" width="600" height="350" class="w-full h-[350px]"></canvas>
+      <canvas id="cvs-elec" width="600" height="350" class="w-full h-[320px] md:h-[350px]"></canvas>
     </div>
   </div>
 
   <script>
-    // Navigation
+    let activeSec = 1;
+
     function showSection(num) {
+      activeSec = num;
       for(let i=1; i<=3; i++) {
         document.getElementById(`section${i}`).classList.add('hidden');
-        document.getElementById(`btn-sec${i}`).className = 'px-4 py-2.5 rounded-lg font-bold text-sm bg-slate-800 text-slate-300 border border-slate-700';
+        document.getElementById(`btn-sec${i}`).className = 'whitespace-nowrap px-3.5 py-2 rounded-lg font-bold text-xs md:text-sm bg-slate-800 text-slate-300 border border-slate-700';
       }
       document.getElementById(`section${num}`).classList.remove('hidden');
-      document.getElementById(`btn-sec${num}`).className = 'px-4 py-2.5 rounded-lg font-bold text-sm bg-blue-600 text-white';
+      document.getElementById(`btn-sec${num}`).className = 'whitespace-nowrap px-3.5 py-2 rounded-lg font-bold text-xs md:text-sm bg-blue-600 text-white';
 
       if(num === 1) drawSelectedAtom();
       if(num === 2) renderAtt();
@@ -159,42 +169,42 @@
       if(atomTimer) cancelAnimationFrame(atomTimer);
 
       function loop() {
-        if(document.getElementById('section1').classList.contains('hidden')) return;
+        if(activeSec !== 1) return;
         ctx.clearRect(0,0,cvs.width,cvs.height);
         const cx = cvs.width/2, cy = cvs.height/2;
 
-        ctx.beginPath(); ctx.arc(cx, cy, 25, 0, Math.PI*2);
+        ctx.beginPath(); ctx.arc(cx, cy, 24, 0, Math.PI*2);
         ctx.fillStyle = '#ef4444'; ctx.fill();
         ctx.fillStyle = '#fff'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
         ctx.fillText(`+${data.z}`, cx, cy+4);
 
-        const radii = [50, 90, 135], labels = ['K', 'L', 'M'];
+        const radii = [48, 85, 125], labels = ['K', 'L', 'M'];
         data.shells.forEach((count, idx) => {
           const r = radii[idx];
           ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
-          ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.5; ctx.stroke();
+          ctx.strokeStyle = '#334155'; ctx.lineWidth = 1.5; ctx.stroke();
           ctx.fillStyle = '#94a3b8'; ctx.font = '10px sans-serif';
-          ctx.fillText(labels[idx], cx + r + 10, cy + 3);
+          ctx.fillText(labels[idx], cx + r + 8, cy + 3);
 
           for(let i=0; i<count; i++) {
             const a = atomAngle + (i * (2 * Math.PI / count));
             const ex = cx + r * Math.cos(a), ey = cy + r * Math.sin(a);
-            ctx.beginPath(); ctx.arc(ex, ey, 6, 0, Math.PI*2);
+            ctx.beginPath(); ctx.arc(ex, ey, 5.5, 0, Math.PI*2);
             ctx.fillStyle = '#38bdf8'; ctx.fill();
-            ctx.fillStyle = '#fff'; ctx.font = 'bold 9px sans-serif';
+            ctx.fillStyle = '#fff'; ctx.font = 'bold 8px sans-serif';
             ctx.fillText('-', ex, ey+3);
           }
         });
-        atomAngle += 0.015;
+        atomAngle += 0.012;
         atomTimer = requestAnimationFrame(loop);
       }
       loop();
     }
 
-    // --- Section 2: Attraction & Repulsion (Fixed Physics & Collision) ---
-    let attX = 80, attY = 220;
+    // --- Section 2: Attraction & Repulsion ---
+    let attX = 80, attY = 200;
 
-    function resetAttraction() { attX = 80; attY = 220; renderAtt(); }
+    function resetAttraction() { attX = 80; attY = 200; renderAtt(); }
 
     function renderAtt() {
       const cvs = document.getElementById('cvs-att');
@@ -208,58 +218,48 @@
       const isSame = (handType === hungType);
       if(isSame) {
         resBox.className = 'bg-slate-900 p-3 rounded-lg border border-slate-700 text-xs font-bold text-rose-400';
-        resBox.innerHTML = `⚠️ شحنات متماثلة (${handType==='ebonite'?'- مع -':'+ مع +'}): تنافر قادم! يمنع الاقتراب والتداخل.`;
+        resBox.innerHTML = `⚠️ شحنات متماثلة: تنافر مادي قوي يمنع الاقتراب والتداخل.`;
       } else {
         resBox.className = 'bg-slate-900 p-3 rounded-lg border border-slate-700 text-xs font-bold text-emerald-400';
-        resBox.innerHTML = `✨ شحنات مختلفة (- مع +): تجاذب! يلتصق القضيب دون تداخل.`;
+        resBox.innerHTML = `✨ شحنات مختلفة: تجاذب يربط القضيب المعلق بالقضيب الممسوك.`;
       }
 
-      // Stand & Support
       const px = 360, py = 50;
-      ctx.beginPath(); ctx.moveTo(px-40, py); ctx.lineTo(px+40, py); ctx.lineWidth=5; ctx.strokeStyle='#64748b'; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px-40, py); ctx.lineTo(px+40, py); ctx.lineWidth=4; ctx.strokeStyle='#64748b'; ctx.stroke();
       ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, py+50); ctx.lineWidth=2; ctx.strokeStyle='#cbd5e1'; ctx.stroke();
 
-      // Calculation Positions
-      const handCenterX = attX + 65;
-      const handCenterY = attY + 13;
-      const hungCenterX = px;
-      const hungCenterY = py + 62;
+      const handCenterX = attX + 65, handCenterY = attY + 13;
+      const hungCenterX = px, hungCenterY = py + 62;
 
       const dist = Math.hypot(handCenterX - hungCenterX, handCenterY - hungCenterY);
       let angle = 0;
 
-      if(dist < 220) {
-        const factor = (220 - dist) / 220;
+      if(dist < 210) {
+        const factor = (210 - dist) / 210;
         const isLeft = (handCenterX < hungCenterX);
 
         if(isSame) {
-          // Repulsion force rotates rod away and prevents intersection
-          angle = isLeft ? (factor * 0.75) : -(factor * 0.75);
-          
-          // Collision stop boundary for Hand Rod
+          angle = isLeft ? (factor * 0.7) : -(factor * 0.7);
           const minAllowedDist = 110;
           if(dist < minAllowedDist) {
             const pushBack = minAllowedDist - dist;
-            if(isLeft) attX -= pushBack * 0.6;
-            else attX += pushBack * 0.6;
-            if(handCenterY < hungCenterY) attY -= pushBack * 0.4;
-            else attY += pushBack * 0.4;
+            if(isLeft) attX -= pushBack * 0.5;
+            else attX += pushBack * 0.5;
+            if(handCenterY < hungCenterY) attY -= pushBack * 0.3;
+            else attY += pushBack * 0.3;
           }
         } else {
-          // Attraction force rotates rod towards hand until collision edge
-          angle = isLeft ? -(factor * 0.55) : (factor * 0.55);
-          
-          // Stop at contact boundary (no penetration)
+          angle = isLeft ? -(factor * 0.5) : (factor * 0.5);
           const contactDist = 85;
           if(dist < contactDist) {
             const overlap = contactDist - dist;
-            if(isLeft) attX -= overlap * 0.5;
-            else attX += overlap * 0.5;
+            if(isLeft) attX -= overlap * 0.4;
+            else attX += overlap * 0.4;
           }
         }
       }
 
-      // Draw Hung Rod (Rotating)
+      // Hung Rod
       ctx.save();
       ctx.translate(px, py+50);
       ctx.rotate(angle);
@@ -276,7 +276,7 @@
       ctx.fillText(`${sign}  ${sign}  ${sign}`, 0, -4);
       ctx.restore();
 
-      // Draw Hand Rod (Movable with Physics boundaries)
+      // Hand Rod
       ctx.fillStyle = handType === 'ebonite' ? '#1e293b' : '#38bdf8';
       ctx.fillRect(attX, attY, 130, 26);
       ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1.5; ctx.strokeRect(attX, attY, 130, 26);
@@ -303,7 +303,7 @@
       const method = document.getElementById('elec-method').value;
       const infoBox = document.getElementById('elec-info-box');
 
-      const cx = 380, cy = 100;
+      const cx = 360, cy = 95;
       const rodTipX = elecX + 130, rodTipY = elecY + 13;
       const dist = Math.hypot(rodTipX - cx, rodTipY - cy);
 
@@ -311,50 +311,50 @@
       let activeState = false;
 
       if(method === 'contact') {
-        infoBox.innerHTML = `📌 <span class="text-blue-300">التكهرب باللمس:</span> المرجو إيصال القضيب لـ **لمس** القرص المعدني مباشرة.`;
-        if(dist < 55) {
-          leafAngle = 0.55;
-          activeState = true;
-        }
+        infoBox.innerHTML = `📌 <span class="text-blue-300">التكهرب باللمس:</span> يرجى لمس القرص الأكبر مباشرة بالقضيب.`;
+        if(dist < 50) { leafAngle = 0.52; activeState = true; }
       } else {
-        infoBox.innerHTML = `📌 <span class="text-emerald-300">التكهرب بالتأثير:</span> قرب القضيب من القرص **دون لمسه**.`;
-        if(dist < 160) {
-          leafAngle = ((160 - dist) / 160) * 0.45;
-          activeState = leafAngle > 0.05;
+        infoBox.innerHTML = `📌 <span class="text-emerald-300">التكهرب بالتأثير:</span> تقريب القضيب من القرص دون لمسه.`;
+        if(dist < 150) {
+          leafAngle = ((150 - dist) / 150) * 0.42;
+          activeState = leafAngle > 0.04;
         }
       }
 
-      ctx.beginPath(); ctx.arc(cx, cy + 130, 75, 0, Math.PI*2);
-      ctx.fillStyle = 'rgba(30, 41, 59, 0.5)'; ctx.fill();
+      // Flask
+      ctx.beginPath(); ctx.arc(cx, cy + 125, 70, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(30, 41, 59, 0.4)'; ctx.fill();
       ctx.strokeStyle = '#475569'; ctx.lineWidth = 2; ctx.stroke();
 
-      ctx.beginPath(); ctx.arc(cx, cy, 25, 0, Math.PI*2);
+      // Knob
+      ctx.beginPath(); ctx.arc(cx, cy, 24, 0, Math.PI*2);
       ctx.fillStyle = '#94a3b8'; ctx.fill();
       ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 2; ctx.stroke();
 
-      ctx.beginPath(); ctx.moveTo(cx, cy+25); ctx.lineTo(cx, cy + 130);
-      ctx.lineWidth = 6; ctx.strokeStyle = '#cbd5e1'; ctx.stroke();
+      // Stem
+      ctx.beginPath(); ctx.moveTo(cx, cy+24); ctx.lineTo(cx, cy + 125);
+      ctx.lineWidth = 5; ctx.strokeStyle = '#cbd5e1'; ctx.stroke();
 
-      ctx.save();
-      ctx.translate(cx, cy + 130);
+      // Leaves
+      ctx.save(); ctx.translate(cx, cy + 125);
 
       ctx.save();
       ctx.rotate(-leafAngle);
-      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-12, 55);
-      ctx.lineWidth = 5; ctx.strokeStyle = '#f59e0b'; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-10, 50);
+      ctx.lineWidth = 4; ctx.strokeStyle = '#f59e0b'; ctx.stroke();
       if(activeState) {
-        ctx.fillStyle = '#fff'; ctx.font = 'bold 12px sans-serif';
-        ctx.fillText(rodType === 'ebonite' ? '-' : '+', -18, 35);
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 11px sans-serif';
+        ctx.fillText(rodType === 'ebonite' ? '-' : '+', -15, 32);
       }
       ctx.restore();
 
       ctx.save();
       ctx.rotate(leafAngle);
-      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(12, 55);
-      ctx.lineWidth = 5; ctx.strokeStyle = '#f59e0b'; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(10, 50);
+      ctx.lineWidth = 4; ctx.strokeStyle = '#f59e0b'; ctx.stroke();
       if(activeState) {
-        ctx.fillStyle = '#fff'; ctx.font = 'bold 12px sans-serif';
-        ctx.fillText(rodType === 'ebonite' ? '-' : '+', 18, 35);
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 11px sans-serif';
+        ctx.fillText(rodType === 'ebonite' ? '-' : '+', 15, 32);
       }
       ctx.restore();
 
@@ -362,9 +362,9 @@
 
       if(activeState) {
         ctx.fillStyle = (method === 'induction') ? (rodType==='ebonite'?'#f59e0b':'#38bdf8') : (rodType==='ebonite'?'#38bdf8':'#f59e0b');
-        ctx.font = 'bold 14px sans-serif'; ctx.textAlign = 'center';
+        ctx.font = 'bold 13px sans-serif'; ctx.textAlign = 'center';
         const sign = (method === 'induction') ? (rodType==='ebonite'?'+':'-') : (rodType==='ebonite'?'-':'+');
-        ctx.fillText(`${sign} ${sign} ${sign}`, cx, cy + 5);
+        ctx.fillText(`${sign} ${sign} ${sign}`, cx, cy + 4);
       }
 
       ctx.fillStyle = rodType === 'ebonite' ? '#1e293b' : '#38bdf8';
@@ -379,10 +379,11 @@
       ctx.fillText(`${rodSign} ${rodSign} ${rodSign} ${rodSign}`, elecX + 65, elecY - 4);
     }
 
-    // Drag Helper with limits
+    // Touch Optimization with Passive Listener
     function setupDrag(canvasId, setCoord, renderFn) {
       const cvs = document.getElementById(canvasId);
       let dragging = false;
+
       const updatePos = (e) => {
         const r = cvs.getBoundingClientRect();
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -390,9 +391,15 @@
         setCoord(clientX - r.left - 65, clientY - r.top - 13);
         renderFn();
       };
-      cvs.onmousedown = cvs.ontouchstart = (e) => { dragging = true; updatePos(e); };
-      window.onmousemove = window.ontouchmove = (e) => { if(dragging) updatePos(e); };
-      window.onmouseup = window.ontouchend = () => dragging = false;
+
+      cvs.addEventListener('mousedown', (e) => { dragging = true; updatePos(e); });
+      cvs.addEventListener('touchstart', (e) => { dragging = true; updatePos(e); }, { passive: true });
+
+      window.addEventListener('mousemove', (e) => { if(dragging) updatePos(e); });
+      window.addEventListener('touchmove', (e) => { if(dragging) updatePos(e); }, { passive: true });
+
+      window.addEventListener('mouseup', () => dragging = false);
+      window.addEventListener('touchend', () => dragging = false);
     }
 
     window.onload = () => {
