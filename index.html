@@ -8,16 +8,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Tajawal', sans-serif; background-color: #0f172a; color: #f8fafc; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
-    canvas { 
-      background-color: #020617; 
-      border: 1px solid #334155; 
-      border-radius: 12px; 
+    canvas {
+      background-color: #020617;
+      border: 1px solid #334155;
+      border-radius: 12px;
       cursor: grab;
       will-change: transform;
       transform: translateZ(0);
+      /* مهم للهاتف: يمنع تمرير الصفحة أثناء سحب القضيب */
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
     }
     canvas:active { cursor: grabbing; }
-    button, select { cursor: pointer; user-select: none; }
+    button, select { cursor: pointer; user-select: none; touch-action: manipulation; }
   </style>
 </head>
 <body class="p-3 md:p-4 max-w-6xl mx-auto space-y-4">
@@ -35,9 +40,9 @@
 
   <!-- Navigation Buttons -->
   <div class="flex gap-2 overflow-x-auto pb-1">
-    <button id="btn-sec1" ontouchstart="showSection(1); event.preventDefault();" onclick="showSection(1)" class="whitespace-nowrap px-3.5 py-2.5 rounded-lg font-bold text-xs md:text-sm bg-blue-600 text-white shadow">⚛️ النموذج الكوكبي</button>
-    <button id="btn-sec2" ontouchstart="showSection(2); event.preventDefault();" onclick="showSection(2)" class="whitespace-nowrap px-3.5 py-2.5 rounded-lg font-bold text-xs md:text-sm bg-slate-800 text-slate-300 border border-slate-700">🧲 التجاذب والتنافر</button>
-    <button id="btn-sec3" ontouchstart="showSection(3); event.preventDefault();" onclick="showSection(3)" class="whitespace-nowrap px-3.5 py-2.5 rounded-lg font-bold text-xs md:text-sm bg-slate-800 text-slate-300 border border-slate-700">⚡ طرق التكهرب</button>
+    <button id="btn-sec1" onclick="showSection(1)" class="whitespace-nowrap px-3.5 py-2.5 rounded-lg font-bold text-xs md:text-sm bg-blue-600 text-white shadow">⚛️ النموذج الكوكبي</button>
+    <button id="btn-sec2" onclick="showSection(2)" class="whitespace-nowrap px-3.5 py-2.5 rounded-lg font-bold text-xs md:text-sm bg-slate-800 text-slate-300 border border-slate-700">🧲 التجاذب والتنافر</button>
+    <button id="btn-sec3" onclick="showSection(3)" class="whitespace-nowrap px-3.5 py-2.5 rounded-lg font-bold text-xs md:text-sm bg-slate-800 text-slate-300 border border-slate-700">⚡ طرق التكهرب</button>
   </div>
 
   <!-- SECTION 1: ATOM MODEL -->
@@ -55,15 +60,15 @@
       <div id="atom-info" class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-xs space-y-1.5 text-slate-300"></div>
     </div>
     <div class="md:col-span-2 bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-center">
-      <canvas id="cvs-atom" width="600" height="350" class="w-full h-[320px] md:h-[350px]"></canvas>
+      <canvas id="cvs-atom" width="600" height="350" class="w-full h-auto"></canvas>
     </div>
   </div>
 
-  <!-- SECTION 2: ATTRACTION & REPUISION -->
+  <!-- SECTION 2: ATTRACTION & REPULSION -->
   <div id="section2" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
     <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3">
       <h2 class="font-bold text-blue-400 border-b border-slate-700 pb-2">🧲 التجاذب والتنافر بين الشحنات</h2>
-      
+
       <div>
         <label class="block text-xs text-slate-300 font-semibold mb-1">1. القضيب الممسوك باليد:</label>
         <select id="rod-hand" onchange="renderAtt()" class="w-full bg-slate-900 border border-slate-700 p-2.5 rounded-lg text-xs font-bold text-slate-200">
@@ -83,13 +88,13 @@
       <div id="att-result-box" class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-xs space-y-1 font-bold"></div>
 
       <p class="text-xs text-slate-400 bg-slate-900/60 p-2.5 rounded-lg border border-slate-700">
-        👈 **طريقة التجربة:** اسحب القضيب بيدك وقربه من المعلق لملاحظة التنافر أو التجاذب بدقة.
+        👈 <b class="text-slate-200">طريقة التجربة:</b> اسحب القضيب بيدك (أو بإصبعك) وقربه من المعلق لملاحظة التنافر أو التجاذب بدقة.
       </p>
 
-      <button ontouchstart="resetAttraction(); event.preventDefault();" onclick="resetAttraction()" class="w-full py-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold">🔄 إعادة الوضع الابتدائي</button>
+      <button onclick="resetAttraction()" class="w-full py-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold">🔄 إعادة الوضع الابتدائي</button>
     </div>
     <div class="md:col-span-2 bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-center">
-      <canvas id="cvs-att" width="600" height="350" class="w-full h-[320px] md:h-[350px]"></canvas>
+      <canvas id="cvs-att" width="600" height="350" class="w-full h-auto"></canvas>
     </div>
   </div>
 
@@ -97,7 +102,7 @@
   <div id="section3" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
     <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3">
       <h2 class="font-bold text-blue-400 border-b border-slate-700 pb-2">⚡ الطرق والكشاف الكهربائي</h2>
-      
+
       <div>
         <label class="block text-xs text-slate-300 font-semibold mb-1">اختر نوع القضيب:</label>
         <select id="elec-rod-type" onchange="renderElectro()" class="w-full bg-slate-900 border border-slate-700 p-2.5 rounded-lg text-xs font-bold text-slate-200">
@@ -117,13 +122,13 @@
       <div id="elec-info-box" class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-xs text-amber-400 font-bold space-y-1"></div>
 
       <p class="text-xs text-slate-400 bg-slate-900/60 p-2.5 rounded-lg border border-slate-700">
-        👈 **طريقة التجربة:** اسحب القضيب وقربه من قرص الكشاف العلوي.
+        👈 <b class="text-slate-200">طريقة التجربة:</b> اسحب القضيب وقربه من قرص الكشاف العلوي.
       </p>
 
-      <button ontouchstart="resetElectro(); event.preventDefault();" onclick="resetElectro()" class="w-full py-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold">🔄 تفريغ شحنة الكشاف</button>
+      <button onclick="resetElectro()" class="w-full py-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold">🔄 تفريغ شحنة الكشاف</button>
     </div>
     <div class="md:col-span-2 bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-center">
-      <canvas id="cvs-elec" width="600" height="350" class="w-full h-[320px] md:h-[350px]"></canvas>
+      <canvas id="cvs-elec" width="600" height="350" class="w-full h-auto"></canvas>
     </div>
   </div>
 
@@ -269,7 +274,7 @@
       ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5; ctx.strokeRect(-70, 0, 140, 24);
       ctx.fillStyle = '#fff'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
       ctx.fillText(hungType === 'ebonite' ? 'إيبونيت (-)' : 'زجاج (+)', 0, 16);
-      
+
       const sign = hungType === 'ebonite' ? '-' : '+';
       ctx.fillStyle = hungType === 'ebonite' ? '#38bdf8' : '#f59e0b';
       ctx.font = 'bold 12px sans-serif';
@@ -372,41 +377,48 @@
       ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1.5; ctx.strokeRect(elecX, elecY, 130, 26);
       ctx.fillStyle = '#fff'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
       ctx.fillText(rodType === 'ebonite' ? 'إيبونيت (-)' : 'زجاج (+)', elecX + 65, elecY + 17);
-      
+
       const rodSign = rodType === 'ebonite' ? '-' : '+';
       ctx.fillStyle = rodType === 'ebonite' ? '#38bdf8' : '#f59e0b';
       ctx.font = 'bold 12px sans-serif';
       ctx.fillText(`${rodSign} ${rodSign} ${rodSign} ${rodSign}`, elecX + 65, elecY - 4);
     }
 
-    // Touch Drag Handler optimized for mobile canvas interaction
+    // سحب القضيب: Pointer Events (ماوس + لمس + قلم) بحدث واحد
     function setupDrag(canvasId, setCoord, renderFn) {
       const cvs = document.getElementById(canvasId);
-      let dragging = false;
+      let activeId = null;
 
-      const updatePos = (clientX, clientY) => {
+      const updatePos = (e) => {
         const r = cvs.getBoundingClientRect();
-        setCoord(clientX - r.left - 65, clientY - r.top - 13);
+        // تحويل من إحداثيات الشاشة إلى إحداثيات الرسم (600×350)
+        const x = (e.clientX - r.left) * (cvs.width / r.width);
+        const y = (e.clientY - r.top) * (cvs.height / r.height);
+        setCoord(x - 65, y - 13);
         renderFn();
       };
 
-      cvs.addEventListener('mousedown', (e) => { dragging = true; updatePos(e.clientX, e.clientY); });
-      cvs.addEventListener('touchstart', (e) => { 
-        dragging = true; 
-        if(e.touches && e.touches[0]) {
-          updatePos(e.touches[0].clientX, e.touches[0].clientY);
-        }
-      }, { passive: true });
+      cvs.addEventListener('pointerdown', (e) => {
+        if(activeId !== null) return;          // تجاهل الإصبع الثاني
+        activeId = e.pointerId;
+        try { cvs.setPointerCapture(e.pointerId); } catch(_) {}
+        updatePos(e);
+        e.preventDefault();
+      });
 
-      window.addEventListener('mousemove', (e) => { if(dragging) updatePos(e.clientX, e.clientY); });
-      window.addEventListener('touchmove', (e) => { 
-        if(dragging && e.touches && e.touches[0]) { 
-          updatePos(e.touches[0].clientX, e.touches[0].clientY); 
-        } 
-      }, { passive: true });
+      cvs.addEventListener('pointermove', (e) => {
+        if(e.pointerId !== activeId) return;
+        updatePos(e);
+        e.preventDefault();
+      });
 
-      window.addEventListener('mouseup', () => dragging = false);
-      window.addEventListener('touchend', () => dragging = false);
+      const stop = (e) => {
+        if(e.pointerId !== activeId) return;
+        activeId = null;
+        try { cvs.releasePointerCapture(e.pointerId); } catch(_) {}
+      };
+      cvs.addEventListener('pointerup', stop);
+      cvs.addEventListener('pointercancel', stop);
     }
 
     window.onload = () => {
